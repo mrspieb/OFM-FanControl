@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns:op="http://github.com/OpenKNX/OpenKNXproducer" xmlns="http://knx.org/xml/project/20" CreatedBy="KNX MT" ToolVersion="5.1.255.16695">
+  <ManufacturerData>
+    <Manufacturer RefId="M-00FA">
+      <Catalog>
+        <CatalogSection Id="M-00FA_CS-1" Name="Geräte" Number="1" DefaultLanguage="de">
+          <CatalogItem Id="%CatalogItemId%" Name="Fan" Number="1" ProductRefId="%ProductId%" Hardware2ProgramRefId="%Hardware2ProgramId%" DefaultLanguage="de" />
+        </CatalogSection>
+      </Catalog>
+      <ApplicationPrograms>
+        <ApplicationProgram Id="%AID%" ApplicationNumber="1" ApplicationVersion="1" ReplacesVersions="0" ProgramType="ApplicationProgram" MaskVersion="MV-07B0" Name="Fan" LoadProcedureStyle="MergedProcedure" PeiType="0" DefaultLanguage="de" DynamicTableManagement="false" Linkable="true" MinEtsVersion="5.0">
+          <Static>
+            <Code>
+              <RelativeSegment Id="%AID%_RS-04-00000" Name="Parameters" Offset="0" Size="%MemorySize%" LoadStateMachine="4" />
+            </Code>
+            <ParameterTypes>
+              <!-- the following ParameterTypes are from a productive example -->
+              <!-- simple integer type -->
+              <ParameterType Id="%AID%_PT-FanSpeed" Name="FanSpeed">
+                <TypeNumber SizeInBit="8" Type="signedInt" minInclusive="0" maxInclusive="5" />
+              </ParameterType>
+              <!-- enumeration with 8-bit (word) values -->
+              <ParameterType Id="%AID%_PT-OpMode" Name="OpMode">
+                <TypeRestriction Base="Value" SizeInBit="8">
+                  <Enumeration Text="Aus" Value="0" Id="%AID%_PT-OpMode_EN-0" />
+                  <Enumeration Text="Manuell" Value="1" Id="%AID%_PT-OpMode_EN-1" />
+                  <Enumeration Text="Automatisch" Value="2" Id="%AID%_PT-OpMode_EN-2" />
+                  <Enumeration Text="Kommunikationsobjekt" Value="3" Id="%AID%_PT-OpMode_EN-3" />
+                </TypeRestriction>
+              </ParameterType>
+              <ParameterType Id="%AID%_PT-ControlMode" Name="ControlMode">
+                <TypeRestriction Base="Value" SizeInBit="8">
+                  <Enumeration Text="Schwellwert" Value="0" Id="%AID%_PT-ControlMode_EN-0" />
+                  <Enumeration Text="Adaptiv" Value="1" Id="%AID%_PT-ControlMode_EN-1" />
+                </TypeRestriction>
+              </ParameterType>
+              <ParameterType Id="%AID%_PT-ThresholdModeSpeed" Name="ThresholdModeSpeed">
+                <TypeNumber SizeInBit="8" Type="signedInt" minInclusive="1" maxInclusive="5" />
+              </ParameterType>
+              <ParameterType Id="%AID%_PT-VentMode" Name="VentMode">
+                <TypeRestriction Base="Value" SizeInBit="8">
+                  <Enumeration Text="Wärmerückgewinnung" Value="0" Id="%AID%_PT-VentMode_EN-0" />
+                  <Enumeration Text="Zuluft" Value="1" Id="%AID%_PT-VentMode_EN-1" />
+                  <Enumeration Text="Abluft" Value="2" Id="%AID%_PT-VentMode_EN-2" />
+                  <Enumeration Text="Kommunikationsobjekt" Value="3" Id="%AID%_PT-VentMode_EN-3" />
+                </TypeRestriction>
+              </ParameterType>
+              <ParameterType Id="%AID%_PT-HumSensMode" Name="HumSensMode">
+                <TypeRestriction Base="Value" SizeInBit="8">
+                  <Enumeration Text="Relativ" Value="0" Id="%AID%_PT-HumSensMode_EN-0" />
+                  <Enumeration Text="Absolut" Value="1" Id="%AID%_PT-HumSensMode_EN-1" />
+                </TypeRestriction>
+              </ParameterType>
+              <ParameterType Id="%AID%_PT-TimerSelection" Name="TimerSelection">
+                <TypeRestriction Base="Value" SizeInBit="16">
+                  <Enumeration Text="5 Minuten" Value="300" Id="%AID%_PT-TimerSelection_EN-1" />
+                  <Enumeration Text="10 Minuten" Value="600" Id="%AID%_PT-TimerSelection_EN-2" />
+                  <Enumeration Text="15 Minuten" Value="900" Id="%AID%_PT-TimerSelection_EN-3" />
+                  <Enumeration Text="30 Minuten" Value="1800" Id="%AID%_PT-TimerSelection_EN-4" />
+                  <Enumeration Text="60 Minuten" Value="3600" Id="%AID%_PT-TimerSelection_EN-5" />
+                  <Enumeration Text="2 Stunden" Value="7200" Id="%AID%_PT-TimerSelection_EN-6" />
+                  <Enumeration Text="3 Stunden" Value="10800" Id="%AID%_PT-TimerSelection_EN-7" />
+                  <Enumeration Text="4 Stunden" Value="14400" Id="%AID%_PT-TimerSelection_EN-8" />
+                  <Enumeration Text="5 Stunden" Value="18000" Id="%AID%_PT-TimerSelection_EN-9" />
+                </TypeRestriction>
+              </ParameterType>
+              <!-- Parameter type for an 8 bit percent parameter -->
+              <ParameterType Id="%AID%_PT-Percentage" Name="Percentage">
+                <TypeNumber SizeInBit="8" Type="signedInt" minInclusive="0" maxInclusive="100" />
+              </ParameterType>
+              <ParameterType Id="%AID%_PT-%TT%Text40Byte" Name="Text40Byte">
+                <TypeText SizeInBit="320" />
+              </ParameterType>
+              <!-- Parameter type for an 16 bit float value like temperature -->
+              <!-- <ParameterType Id="%AID%_PT-ValueDpt9" Name="ValueDpt9">
+                <TypeFloat Encoding="IEEE-754 Single" minInclusive="-671088" maxInclusive="670760" />
+              </ParameterType> -->
+            </ParameterTypes>
+            
+            <Parameters>
+            </Parameters>
+
+            <ParameterRefs>
+            </ParameterRefs>
+
+            <ComObjectTable>
+            </ComObjectTable>
+
+            <AddressTable MaxEntries="65535" />
+            <AssociationTable MaxEntries="65535" />
+            <LoadProcedures>
+              <LoadProcedure MergeId="2">
+                <LdCtrlRelSegment LsmIdx="4" Size="%MemorySize%" Mode="1" Fill="0" AppliesTo="full" />
+                <LdCtrlRelSegment LsmIdx="4" Size="%MemorySize%" Mode="0" Fill="0" AppliesTo="par" />
+              </LoadProcedure>
+              <LoadProcedure MergeId="4">
+                <LdCtrlWriteRelMem ObjIdx="4" Offset="0" Size="%MemorySize%" Verify="true" AppliesTo="full,par" />
+              </LoadProcedure>
+              <LoadProcedure MergeId="7">
+                <LdCtrlLoadImageProp ObjIdx="1" PropId="27" />
+                <LdCtrlLoadImageProp ObjIdx="2" PropId="27" />
+                <LdCtrlLoadImageProp ObjIdx="3" PropId="27" />
+                <LdCtrlLoadImageProp ObjIdx="4" PropId="27" />
+              </LoadProcedure>
+            </LoadProcedures>
+            <Options />
+          </Static>
+
+
+
+
+          <!-- Here statrs the UI definition -->
+          <Dynamic>
+            <Channel Id="%AID%_CH-%PREFIX%" Name="Fans" Number="%PREFIX%" Text="Lüfter">
+              <ParameterBlock Id="%AID%_PB-1" Name="General" Text="Allgemein">
+                <ParameterSeparator Id="%AID%_PS-nnn" Text="Lüftermodul" UIHint="Headline" />
+                <ParameterSeparator Id="%AID%_PS-nnn" Text="Version: %ModuleVersion%" />
+              </ParameterBlock>
+              <op:include href="Fan.templ.xml" xpath="//ApplicationProgram/Dynamic/ChannelIndependentBlock/*" type="template" prefix="FAN" IsInner="true" />
+            </Channel>
+          </Dynamic>
+        </ApplicationProgram>
+      </ApplicationPrograms>
+      <Hardware>
+        <Hardware Id="%HardwareId%" Name="Fan" SerialNumber="1" VersionNumber="1" BusCurrent="10" HasIndividualAddress="true" HasApplicationProgram="true">
+          <Products>
+            <Product Id="%ProductId%" Text="Fan" OrderNumber="1" IsRailMounted="false" DefaultLanguage="de">
+              <RegistrationInfo RegistrationStatus="Registered" />
+            </Product>
+          </Products>
+          <Hardware2Programs>
+            <Hardware2Program Id="%Hardware2ProgramId%" MediumTypes="MT-0">
+              <ApplicationProgramRef RefId="%AID%" />
+              <RegistrationInfo RegistrationStatus="Registered" RegistrationNumber="0001/%HardwareVersionEncoded%1" />
+            </Hardware2Program>
+          </Hardware2Programs>
+        </Hardware>
+      </Hardware>
+    </Manufacturer>
+  </ManufacturerData>
+</KNX>
