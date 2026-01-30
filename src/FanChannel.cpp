@@ -177,7 +177,13 @@ void FanChannel::processInputKo(GroupObject& ko)
         {
             uint8_t timerenable = ko.value(DPT_Enable);
             if(timerenable){
-                _fan.setTimer(ParamFAN_CH_TimerSelection, std::bind(&FanChannel::timerCallback, this));
+                int32_t runtime;
+                if(ParamFAN_CH_TimerSelection == 0) // Manual
+                    runtime = ParamFAN_CH_TimerValue;
+                else
+                    runtime = ParamFAN_CH_TimerSelection;
+
+                _fan.setTimer(runtime, std::bind(&FanChannel::timerCallback, this));
                 int16_t timeractive = 1;
                 KoFAN_CH_TimerFeedback.value(timeractive, DPT_State);
             }

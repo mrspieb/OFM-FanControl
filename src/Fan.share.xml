@@ -21,24 +21,26 @@
               </ParameterType>
               <!-- enumeration with 8-bit (word) values -->
               <ParameterType Id="%AID%_PT-OpMode" Name="OpMode">
-                <TypeRestriction Base="Value" SizeInBit="8">
+                <TypeRestriction Base="Value" SizeInBit="3">
                   <Enumeration Text="Aus" Value="0" Id="%AID%_PT-OpMode_EN-0" />
                   <Enumeration Text="Manuell" Value="1" Id="%AID%_PT-OpMode_EN-1" />
                   <Enumeration Text="Automatisch" Value="2" Id="%AID%_PT-OpMode_EN-2" />
                   <Enumeration Text="Kommunikationsobjekt" Value="3" Id="%AID%_PT-OpMode_EN-3" />
+                  <!-- 1 bit reserve -->
                 </TypeRestriction>
               </ParameterType>
               <ParameterType Id="%AID%_PT-ControlMode" Name="ControlMode">
-                <TypeRestriction Base="Value" SizeInBit="8">
+                <TypeRestriction Base="Value" SizeInBit="2">
                   <Enumeration Text="Schwellwert" Value="0" Id="%AID%_PT-ControlMode_EN-0" />
                   <Enumeration Text="Adaptiv" Value="1" Id="%AID%_PT-ControlMode_EN-1" />
+                  <!-- 1 bit reserve -->
                 </TypeRestriction>
               </ParameterType>
               <ParameterType Id="%AID%_PT-ThresholdModeSpeed" Name="ThresholdModeSpeed">
                 <TypeNumber SizeInBit="8" Type="signedInt" minInclusive="1" maxInclusive="5" />
               </ParameterType>
               <ParameterType Id="%AID%_PT-VentMode" Name="VentMode">
-                <TypeRestriction Base="Value" SizeInBit="8">
+                <TypeRestriction Base="Value" SizeInBit="2">
                   <Enumeration Text="Wärmerückgewinnung" Value="0" Id="%AID%_PT-VentMode_EN-0" />
                   <Enumeration Text="Zuluft" Value="1" Id="%AID%_PT-VentMode_EN-1" />
                   <Enumeration Text="Abluft" Value="2" Id="%AID%_PT-VentMode_EN-2" />
@@ -46,9 +48,10 @@
                 </TypeRestriction>
               </ParameterType>
               <ParameterType Id="%AID%_PT-HumSensMode" Name="HumSensMode">
-                <TypeRestriction Base="Value" SizeInBit="8">
+                <TypeRestriction Base="Value" SizeInBit="2">
                   <Enumeration Text="Relativ" Value="0" Id="%AID%_PT-HumSensMode_EN-0" />
                   <Enumeration Text="Absolut" Value="1" Id="%AID%_PT-HumSensMode_EN-1" />
+                  <!-- 1 bit reserve -->
                 </TypeRestriction>
               </ParameterType>
               <ParameterType Id="%AID%_PT-TimerSelection" Name="TimerSelection">
@@ -62,6 +65,7 @@
                   <Enumeration Text="3 Stunden" Value="10800" Id="%AID%_PT-TimerSelection_EN-7" />
                   <Enumeration Text="4 Stunden" Value="14400" Id="%AID%_PT-TimerSelection_EN-8" />
                   <Enumeration Text="5 Stunden" Value="18000" Id="%AID%_PT-TimerSelection_EN-9" />
+                  <Enumeration Text="manuelle Eingabe (Sekundengenau)" Value="0" Id="%AID%_PT-TimerSelection_EN-10" />
                 </TypeRestriction>
               </ParameterType>
               <!-- Parameter type for an 8 bit percent parameter -->
@@ -70,6 +74,9 @@
               </ParameterType>
               <ParameterType Id="%AID%_PT-%TT%Text40Byte" Name="Text40Byte">
                 <TypeText SizeInBit="320" />
+              </ParameterType>
+              <ParameterType Id="%AID%_PT-TimerValueInSeconds" Name="TimerValueInSeconds">
+                <TypeNumber SizeInBit="32" Type="signedInt" minInclusive="0" maxInclusive="86400" />
               </ParameterType>
               <!-- Parameter type for an 16 bit float value like temperature -->
               <!-- <ParameterType Id="%AID%_PT-ValueDpt9" Name="ValueDpt9">
@@ -111,8 +118,8 @@
 
           <!-- Here statrs the UI definition -->
           <Dynamic>
-            <Channel Id="%AID%_CH-%PREFIX%" Name="Fans" Number="%PREFIX%" Text="Lüfter">
-              <ParameterBlock Id="%AID%_PB-1" Name="General" Text="Allgemein">
+            <Channel Id="%AID%_CH-%PREFIX%" Name="Fans" Number="%PREFIX%" Icon="fan" Text="Lüfter">
+              <ParameterBlock Id="%AID%_PB-1" Name="General" Icon="information-outline" Text="Allgemein">
                 <ParameterSeparator Id="%AID%_PS-nnn" Text="Lüftermodul" UIHint="Headline" />
                 <ParameterSeparator Id="%AID%_PS-nnn" Text="Version: %ModuleVersion%" />
               </ParameterBlock>
@@ -121,6 +128,11 @@
           </Dynamic>
         </ApplicationProgram>
       </ApplicationPrograms>
+      <Baggages>
+        <Baggage Id="%FILE-ICONS%" Name="Icons.zip" TargetPath="">
+          <FileInfo TimeInfo="%DATETIME%" />
+        </Baggage>
+      </Baggages>
       <Hardware>
         <Hardware Id="%HardwareId%" Name="Fan" SerialNumber="1" VersionNumber="1" BusCurrent="10" HasIndividualAddress="true" HasApplicationProgram="true">
           <Products>
