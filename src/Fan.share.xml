@@ -24,7 +24,7 @@
                 <TypeRestriction Base="Value" SizeInBit="3">
                   <Enumeration Text="Aus" Value="0" Id="%AID%_PT-OpMode_EN-0" />
                   <Enumeration Text="Manuell" Value="1" Id="%AID%_PT-OpMode_EN-1" />
-                  <Enumeration Text="Automatisch" Value="2" Id="%AID%_PT-OpMode_EN-2" />
+                  <Enumeration Text="Automatik" Value="2" Id="%AID%_PT-OpMode_EN-2" />
                   <Enumeration Text="Kommunikationsobjekt" Value="3" Id="%AID%_PT-OpMode_EN-3" />
                   <!-- 1 bit reserve -->
                 </TypeRestriction>
@@ -78,6 +78,14 @@
               <ParameterType Id="%AID%_PT-TimerValueInSeconds" Name="TimerValueInSeconds">
                 <TypeNumber SizeInBit="32" Type="signedInt" minInclusive="0" maxInclusive="86400" />
               </ParameterType>
+              <ParameterType Id="%AID%_PT-StatusLED" Name="StatusLED">
+                <TypeRestriction Base="Value" SizeInBit="3">
+                  <Enumeration Text="Aus" Value="0" Id="%AID%_PT-StatusLED_EN-0" />
+                  <Enumeration Text="Dauerhaft an" Value="1" Id="%AID%_PT-StatusLED_EN-1" />
+                  <Enumeration Text="Im Lüftungsbetrieb" Value="2" Id="%AID%_PT-StatusLED_EN-2" />
+                  <!-- 1 bit reserve -->
+                </TypeRestriction>
+              </ParameterType>
               <!-- Parameter type for an 16 bit float value like temperature -->
               <!-- <ParameterType Id="%AID%_PT-ValueDpt9" Name="ValueDpt9">
                 <TypeFloat Encoding="IEEE-754 Single" minInclusive="-671088" maxInclusive="670760" />
@@ -85,9 +93,13 @@
             </ParameterTypes>
             
             <Parameters>
+              <Parameter Id="%AID%_P-%TT%00001" Name="StatusLED" ParameterType="%AID%_PT-StatusLED" Text="Modus Status-LED" Value="0">
+                <Memory CodeSegment="%AID%_RS-04-00000" Offset="0" BitOffset="0" />
+              </Parameter>
             </Parameters>
 
             <ParameterRefs>
+              <ParameterRef Id="%AID%_P-%TT%00001_R-%TT%0000101" RefId="%AID%_P-%TT%00001" />
             </ParameterRefs>
 
             <ComObjectTable>
@@ -122,6 +134,7 @@
               <ParameterBlock Id="%AID%_PB-1" Name="General" Icon="information-outline" Text="Allgemein">
                 <ParameterSeparator Id="%AID%_PS-nnn" Text="Lüftermodul" UIHint="Headline" />
                 <ParameterSeparator Id="%AID%_PS-nnn" Text="Version: %ModuleVersion%" />
+                <ParameterRefRef RefId="%AID%_P-%TT%00001_R-%TT%0000101" HelpContext="FAN-StatusLED" /> <!-- Status-LED -->
               </ParameterBlock>
               <op:include href="Fan.templ.xml" xpath="//ApplicationProgram/Dynamic/ChannelIndependentBlock/*" type="template" prefix="FAN" IsInner="true" />
             </Channel>
@@ -129,6 +142,9 @@
         </ApplicationProgram>
       </ApplicationPrograms>
       <Baggages>
+        <Baggage TargetPath="" Name="Help_de.zip" Id="%FILE-HELP-de%">
+          <FileInfo TimeInfo="%DATETIME%" />
+        </Baggage>
         <Baggage Id="%FILE-ICONS%" Name="Icons.zip" TargetPath="">
           <FileInfo TimeInfo="%DATETIME%" />
         </Baggage>

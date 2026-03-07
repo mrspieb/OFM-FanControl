@@ -21,6 +21,7 @@ void FanChannel::setup(bool configured)
     
     setOpMode(ParamFAN_CH_OpMode);
     setVentilationMode(ParamFAN_CH_VentMode);
+    setVentilationMode(ParamFAN_CH_VentModeAutomatic, Fan::VentilationModeTarget_Automatic);
     setControlMode(ParamFAN_CH_ControlMode);
     setHumiditySensorMode(ParamFAN_CH_HumSensMode);
     _fan.thresholdHumidityOn = ParamFAN_CH_ThresholdHumidityOn;
@@ -37,6 +38,11 @@ void FanChannel::setup(bool configured)
 void FanChannel::resetFan()
 {
     _fan.setFanSpeed(0);
+}
+
+int16_t FanChannel::getFanSpeed()
+{
+    return _fan.getFanSpeed();
 }
 
 
@@ -58,18 +64,18 @@ void FanChannel::setOpMode(uint8_t opModeIdx)
     }
 }
 
-void FanChannel::setVentilationMode(uint8_t ventilationModeIdx)
+void FanChannel::setVentilationMode(uint8_t ventilationModeIdx, Fan::VentilationModeTarget target)
 {
     switch (ventilationModeIdx)
     {
     case 0: 
-        _fan.setVentilationMode(Fan::VentilationMode::HeatRecovery);
+        _fan.setVentilationMode(Fan::VentilationMode::HeatRecovery, target);
         break;
     case 1:
-        _fan.setVentilationMode(Fan::VentilationMode::SupplyAir);
+        _fan.setVentilationMode(Fan::VentilationMode::SupplyAir, target);
         break;
     case 2:
-        _fan.setVentilationMode(Fan::VentilationMode::ExhaustAir);
+        _fan.setVentilationMode(Fan::VentilationMode::ExhaustAir, target);
         break;
     default:
         break;
@@ -149,6 +155,16 @@ void FanChannel::processInputKo(GroupObject& ko)
                 uint8_t ventilationModeIdx = ko.value(DPT_Value_1_Ucount);
                 setVentilationMode(ventilationModeIdx);
                 KoFAN_CH_VentModeFeedback.value(ventilationModeIdx, DPT_Value_1_Ucount);
+            }
+            break;
+        }
+        case FAN_KoCH_VentModeAutomatic:
+        {
+            if(ParamFAN_CH_VentModeAutomatic == 3)
+            {
+                uint8_t ventilationModeIdx = ko.value(DPT_Value_1_Ucount);
+                setVentilationMode(ventilationModeIdx, Fan::VentilationModeTarget_Automatic);
+                KoFAN_CH_VentModeFeedbackAutomatic.value(ventilationModeIdx, DPT_Value_1_Ucount);
             }
             break;
         }

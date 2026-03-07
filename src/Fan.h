@@ -30,23 +30,36 @@ public:
     Absolute = 1,
   };
 
+  struct FanState {
+    int16_t speed = 0;
+    VentilationMode ventilationMode = VentilationMode::HeatRecovery;
+  };
+
+  enum VentilationModeTarget {
+    VentilationModeTarget_Manual = 0,
+    VentilationModeTarget_Automatic = 1,
+  };
+
 
   virtual ~Fan() = default;
 
   Fan(IFanHardware& hw);
-  virtual void setVentilationMode(VentilationMode ventilationMode);
+  virtual void setVentilationMode(VentilationMode ventilationMode, VentilationModeTarget target = VentilationModeTarget_Manual);
   virtual void setOperatingMode(OperatingMode operatingMode);
   virtual void setControlMode(ControlMode controlMode);
   void setFanSpeed(int16_t fanSpeed); // for speed changes from outside
   void setTimer(uint64_t secondsRemaining, std::function<void()> timerCallback);
   void stopTimer();
   void setSpeedChangeCallback(std::function<void(int16_t)> callback);
+  FanState saveState();
+  void restoreState(FanState state);
   
   bool setInsideHumdity(float insideRelHumidity);
   void setInsideTemperature(float insideTemperature);
   void setOutsideHumidity(float outsideRelHumidity);
   void setOutsideTemperature(float outsideTemperature);
   virtual int16_t getFanSpeed() = 0;
+  VentilationMode getVentilationMode();
   static float getDewPoint(float relHumidity, float temperature);
 
   HumiditySensorMode humiditySensorMode = HumiditySensorMode::Relative;
@@ -61,6 +74,7 @@ protected:
   void updateEnvironment();
   bool outsideAbsHumidityLower();
   void activateAutoMode();
+  void deactivateAutoMode();
   
   // Callbacks used by logic
   void onTimeoutTimer();
@@ -68,9 +82,12 @@ protected:
   IFanHardware& _hw;
 
   VentilationMode _ventilationMode = VentilationMode::HeatRecovery;
+  VentilationMode _ventilationModeManual = VentilationMode::HeatRecovery;
+  VentilationMode _ventilationModeAutomatic = VentilationMode::HeatRecovery;
   OperatingMode _operatingMode = OperatingMode::Manual;
   ControlMode _controlMode = ControlMode::Threshold;
   
+  bool _autoModeActive = false;
   bool _manualOverrideActive = false;
   const float _controlGain = 0.18; // TODO: determine proper gain value
 
@@ -81,4 +98,6 @@ protected:
 
   std::function<void()> _timerCallback;
   std::function<void(int16_t)> _speedChangeCallback;
+
+  FanState _previousState;
 };

@@ -30,9 +30,24 @@ void Fan::setOperatingMode(OperatingMode operatingMode) {
   updateEnvironment();
 }
 
-void Fan::setVentilationMode(VentilationMode ventilationMode) {
-  _ventilationMode = ventilationMode;
+void Fan::setVentilationMode(VentilationMode ventilationMode, VentilationModeTarget target) {
+  if(target == VentilationModeTarget_Manual) {
+    _ventilationModeManual = ventilationMode;
+  } else {
+    _ventilationModeAutomatic = ventilationMode;
+  }
+
+  if (_autoModeActive) {
+    _ventilationMode = _ventilationModeAutomatic;
+  } else {
+    _ventilationMode = _ventilationModeManual;
+  }
+
   updateMode();
+}
+
+Fan::VentilationMode Fan::getVentilationMode() {
+  return _ventilationMode;
 }
 
 void Fan::setControlMode(ControlMode controlMode) {
@@ -130,14 +145,14 @@ void Fan::updateEnvironment() {
     }
     if (_insideRelHumidity < thresholdHumidityOff) {
       // humidity below threshold -> switch off fan
-      changeFanSpeed(0);
+      deactivateAutoMode();
       return;
     }
   } else {
     // positive hysteresis
     if (_insideRelHumidity < thresholdHumidityOff) {
       // humidity below threshold -> switch off fan
-      changeFanSpeed(0);
+      deactivateAutoMode();
       return;
     }
 
@@ -151,22 +166,41 @@ void Fan::updateEnvironment() {
 }
 
 void Fan::activateAutoMode() {
-    // humidity above threshold -> switch on fan
-    if (_controlMode == ControlMode::Threshold) {
-      changeFanSpeed(thresholdSpeed);
-    } else if (_controlMode == ControlMode::Adaptive) {
-      float delta = 0;
+  _autoModeActive = true;
+  _previousState = saveState();
+  if (_controlMode == ControlMode::Threshold) {
+    changeFanSpeed(thresholdSpeed);
+  } else if (_controlMode == ControlMode::Adaptive) {
+    float delta = 0;
 
-      if (humiditySensorMode == HumiditySensorMode::Relative) {
-        delta = max(_insideRelHumidity - thresholdHumidityOn, 0.0f);
-      } else // humiditySensorMode == HumiditySensorMode::Absolute
-      {
-        delta = getDewPoint(_insideRelHumidity, _insideTemperature) -
-                getDewPoint(_outsideRelHumidity, _outsideTemperature);
-        // no hysteresis here yet
-      }
-      changeFanSpeed(static_cast<int16_t>(floor(_controlGain * delta)));
+    if (humiditySensorMode == HumiditySensorMode::Relative) {
+      delta = max(_insideRelHumidity - thresholdHumidityOn, 0.0f);
+    } else // humiditySensorMode == HumiditySensorMode::Absolute
+    {
+      delta = getDewPoint(_insideRelHumidity, _insideTemperature) -
+              getDewPoint(_outsideRelHumidity, _outsideTemperature);
+      // no hysteresis here yet
     }
+    changeFanSpeed(static_cast<int16_t>(floor(_controlGain * delta)));
+  }
+  setVentilationMode(_ventilationModeAutomatic, VentilationModeTarget_Automatic);
+}
+
+void Fan::deactivateAutoMode() {
+  _autoModeActive = false;
+  restoreState(_previousState);
+}
+
+Fan::FanState Fan::saveState() {
+  FanState state;
+  state.speed = getFanSpeed();
+  state.ventilationMode = _ventilationMode;
+  return state;
+}
+
+void Fan::restoreState(FanState state) {
+  changeFanSpeed(state.speed, true);
+  setVentilationMode(state.ventilationMode);
 }
 
 float Fan::getDewPoint(float relHumidity, float temperature) {

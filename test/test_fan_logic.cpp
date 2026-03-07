@@ -117,6 +117,8 @@ void test_automatic_mode_logic() {
     MaicoPPB30 fan(mockHw, 1, 2, 3);
     
     fan.setOperatingMode(Fan::OperatingMode::Automatic);
+    fan.setVentilationMode(Fan::VentilationMode::HeatRecovery, Fan::VentilationModeTarget_Manual);
+    fan.setVentilationMode(Fan::VentilationMode::ExhaustAir, Fan::VentilationModeTarget_Automatic);
     fan.setInsideTemperature(20.0);
     fan.setInsideHumdity(50.0); // Below threshold (75)
     fan.thresholdHumidityOff = 60; // Set hysteresis
@@ -124,15 +126,18 @@ void test_automatic_mode_logic() {
     
     // Should be off
     TEST_ASSERT_EQUAL(0, fan.getFanSpeed());
+    TEST_ASSERT_EQUAL(Fan::VentilationMode::HeatRecovery, fan.getVentilationMode()); // Should be in heat recovery mode
 
     // Increase humidity above threshold
     fan.setInsideHumdity(80.0);
     // Should turn on to threshold speed (default 4)
     TEST_ASSERT_EQUAL(4, fan.getFanSpeed());
+    TEST_ASSERT_EQUAL(Fan::VentilationMode::ExhaustAir, fan.getVentilationMode()); // Should be in exhaust air mode
     // Decrease humidity below threshold
     fan.setInsideHumdity(50.0);
     // Should turn off
     TEST_ASSERT_EQUAL(0, fan.getFanSpeed());
+    TEST_ASSERT_EQUAL(Fan::VentilationMode::HeatRecovery, fan.getVentilationMode()); // Should be back to heat recovery mode
 
 
     fan.thresholdHumidityOff = 66; // negative hysteresis
@@ -202,7 +207,7 @@ void test_manual_override() {
     fan.setOperatingMode(Fan::OperatingMode::Automatic);
     fan.setControlMode(Fan::ControlMode::Threshold);
     fan.setInsideHumdity(80.0); // Above threshold
-    TEST_ASSERT_GREATER_THAN(0, fan.getFanSpeed()); // Should turn on automatically
+    TEST_ASSERT_EQUAL(fan.thresholdSpeed, fan.getFanSpeed()); // Should turn on automatically
     
     // Now manually override
     fan.setFanSpeed(2);
@@ -211,20 +216,20 @@ void test_manual_override() {
     fan.setInsideHumdity(90.0);
     TEST_ASSERT_EQUAL(2, fan.getFanSpeed());
 
-    // Now change humidity again, should turn off automatically
+    // Now change humidity again, should return to manual override speed
     fan.setInsideHumdity(40.0);
-    TEST_ASSERT_EQUAL(0, fan.getFanSpeed());
+    TEST_ASSERT_EQUAL(2, fan.getFanSpeed());
 
     // Now manually override
-    fan.setFanSpeed(2);
-    TEST_ASSERT_EQUAL(2, fan.getFanSpeed());
+    fan.setFanSpeed(1);
+    TEST_ASSERT_EQUAL(1, fan.getFanSpeed());
     // Now change humidity again, should NOT change speed due to manual override
     fan.setInsideHumdity(38.0);
 
     // Reset manual override by changing operating mode
     fan.setOperatingMode(Fan::OperatingMode::Automatic);
     fan.setInsideHumdity(80.0);
-    TEST_ASSERT_GREATER_THAN(0, fan.getFanSpeed());
+    TEST_ASSERT_EQUAL(fan.thresholdSpeed, fan.getFanSpeed());
 }
 
 int main(int argc, char **argv) {

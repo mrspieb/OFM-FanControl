@@ -1,4 +1,5 @@
 #include "RP2040FanHardware.h"
+#include "hardware.h"
 
 
 RP2040FanHardware::RP2040FanHardware() {
@@ -12,6 +13,7 @@ void RP2040FanHardware::init(uint8_t s1_pin, uint8_t s2_pin, uint8_t sw_pin) {
     pinMode(sw_pin, OUTPUT);
     pinMode(s1_pin, OUTPUT);
     pinMode(s2_pin, OUTPUT);
+    pinMode(STATUS_LED_PIN, OUTPUT);
     
     analogWriteFreq(pwmFreqHz);
     analogWriteResolution(10);
