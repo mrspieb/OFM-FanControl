@@ -130,9 +130,19 @@ void test_automatic_mode_logic() {
 
     // Increase humidity above threshold
     fan.setInsideHumdity(80.0);
+    fan.setInsideHumdity(70.0);
     // Should turn on to threshold speed (default 4)
     TEST_ASSERT_EQUAL(4, fan.getFanSpeed());
     TEST_ASSERT_EQUAL(Fan::VentilationMode::ExhaustAir, fan.getVentilationMode()); // Should be in exhaust air mode
+    // Decrease humidity to upper hysteresis value
+    fan.setInsideHumdity(66.0);
+    TEST_ASSERT_EQUAL(4, fan.getFanSpeed());
+    // Decrease humidity to in between hysteresis value
+    fan.setInsideHumdity(63.0);
+    TEST_ASSERT_EQUAL(4, fan.getFanSpeed());
+    // Decrease humidity to lower hysteresis value
+    fan.setInsideHumdity(60.0);
+    TEST_ASSERT_EQUAL(4, fan.getFanSpeed());
     // Decrease humidity below threshold
     fan.setInsideHumdity(50.0);
     // Should turn off

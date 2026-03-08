@@ -59,6 +59,7 @@ void Fan::setFanSpeed(int16_t fanSpeed) {
     _manualOverrideActive = true;
   
   changeFanSpeed(fanSpeed, true); // force speed change
+  _previousState = saveState(); // update previous state to current state after manual override
 }
 
 void Fan::changeFanSpeed(int16_t fanSpeed, bool force) {
@@ -138,26 +139,26 @@ void Fan::updateEnvironment() {
 
   if(thresholdHumidityOff >= thresholdHumidityOn) {
     // negative hysteresis
-    if (_insideRelHumidity > thresholdHumidityOn) {
-      // humidity above threshold -> switch on fan
+    if (_insideRelHumidity >= thresholdHumidityOn) {
+      // humidity above threshold -> switch to auto mode
       activateAutoMode();
       return;
     }
     if (_insideRelHumidity < thresholdHumidityOff) {
-      // humidity below threshold -> switch off fan
+      // humidity below threshold -> switch to manual mode
       deactivateAutoMode();
       return;
     }
   } else {
     // positive hysteresis
     if (_insideRelHumidity < thresholdHumidityOff) {
-      // humidity below threshold -> switch off fan
+      // humidity below threshold -> switch to manual mode
       deactivateAutoMode();
       return;
     }
 
-    if (_insideRelHumidity > thresholdHumidityOn) {
-      // humidity above threshold -> switch on fan
+    if (_insideRelHumidity >= thresholdHumidityOn) {
+      // humidity above threshold -> switch to auto mode
       activateAutoMode();
       return;
     }
@@ -166,8 +167,10 @@ void Fan::updateEnvironment() {
 }
 
 void Fan::activateAutoMode() {
+  if(!_autoModeActive) {
+    _previousState = saveState();
+  }
   _autoModeActive = true;
-  _previousState = saveState();
   if (_controlMode == ControlMode::Threshold) {
     changeFanSpeed(thresholdSpeed);
   } else if (_controlMode == ControlMode::Adaptive) {
